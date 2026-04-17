@@ -6,7 +6,7 @@ import numpy as np
 
 # ⚡ Page Configuration
 st.set_page_config(
-    page_title="Churn AI Prediction", 
+    page_title="Customer Retention AI", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -157,7 +157,7 @@ def load_data_for_defaults():
 df_original = load_data_for_defaults()
 
 # Main header
-st.title("🚀 Customer Retention AI")
+st.title("Customer Retention AI")
 st.caption("AI-powered system to identify at-risk customers and prevent churn in real-time")
 
 # ⚙️ SIDEBAR INPUTS WITH ORGANIZED SECTIONS
@@ -419,6 +419,24 @@ elif batch_predict_btn and uploaded_file:
             lambda x: "🔴 HIGH" if x >= 0.7 else "🟡 MEDIUM" if x >= 0.4 else "🟢 LOW"
         )
         
+        # Add Customer ID (use existing ID column if available, otherwise create from index)
+        if 'customerID' in df_batch.columns:
+            df_batch['Customer ID'] = df_batch['customerID']
+        elif 'Customer ID' not in df_batch.columns:
+            df_batch.insert(0, 'Customer ID', range(1, len(df_batch) + 1))
+        
+        # Add intelligent recommendations
+        def get_recommendation(row):
+            prob = row['Churn Probability']
+            if prob >= 0.7:
+                return "🎯 URGENT: Call within 24hrs - Offer discount"
+            elif prob >= 0.4:
+                return "📞 Schedule check-in - Review satisfaction"
+            else:
+                return "✅ Maintain - No action needed"
+        
+        df_batch['Recommendation'] = df_batch.apply(get_recommendation, axis=1)
+        
         st.markdown('<p class="section-title">📊 Batch Prediction Analysis</p>', unsafe_allow_html=True)
         
         # ═══════════════════════════════════════════════════════════
@@ -532,7 +550,7 @@ elif batch_predict_btn and uploaded_file:
         # ═══════════════════════════════════════════════════════════
         st.markdown('<p class="section-title">🚨 Top Risk Customers (Immediate Action)</p>', unsafe_allow_html=True)
         
-        top_customers = df_batch.nlargest(5, 'Churn Probability')[['Churn Probability', 'Risk Level']]
+        top_customers = df_batch.nlargest(5, 'Churn Probability')[['Customer ID', 'Churn Probability', 'Risk Level', 'Recommendation']]
         top_customers_display = top_customers.copy()
         top_customers_display['Churn Probability'] = top_customers_display['Churn Probability'].apply(lambda x: f"{x:.0%}")
         
@@ -613,15 +631,18 @@ elif batch_predict_btn and uploaded_file:
         # ═══════════════════════════════════════════════════════════
         st.markdown('<p class="section-title">📋 Full Predictions</p>', unsafe_allow_html=True)
         
-        st.dataframe(df_batch[['Churn Probability', 'Risk Level']], use_container_width=True)
+        st.dataframe(df_batch[['Customer ID', 'Churn Probability', 'Risk Level', 'Recommendation']], use_container_width=True)
         
-        # Download button
-        csv = df_batch[['Churn Probability', 'Risk Level']].to_csv(index=False)
+        # Download button - clean version without emojis in CSV
+        df_export = df_batch[['Customer ID', 'Churn Probability', 'Risk Level', 'Recommendation']].copy()
+        df_export['Risk Level'] = df_export['Risk Level'].str.replace('🔴 ', '').str.replace('🟡 ', '').str.replace('🟢 ', '')
+        df_export['Recommendation'] = df_export['Recommendation'].str.replace('🎯 ', '').str.replace('📞 ', '').str.replace('✅ ', '')
+        csv = df_export.to_csv(index=False, encoding='utf-8')
         st.download_button(
             label="📥 Download Full Results (CSV)",
             data=csv,
             file_name="churn_predictions.csv",
-            mime="text/csv"
+            mime="text/csv;charset=utf-8"
         )
         
     except Exception as e:
