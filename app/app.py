@@ -6,7 +6,7 @@ import numpy as np
 
 # ⚡ Page Configuration
 st.set_page_config(
-    page_title="Churn AI Prediction", 
+    page_title="Customer Retention AI", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
