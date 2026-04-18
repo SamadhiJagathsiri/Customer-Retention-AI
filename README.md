@@ -6,7 +6,6 @@
 ![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-orange?logo=scikitlearn)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-red?logo=streamlit)
 ![Status](https://img.shields.io/badge/Status-Production--Ready-success)
-![License](https://img.shields.io/badge/License-Portfolio-lightgrey)
 
 ---
 
@@ -596,11 +595,7 @@ It takes raw customer data and transforms it into actionable business intelligen
 
 That's the difference between a data science project and a business solution.
 
----
 
-## 📝 License
-
-Educational / portfolio use
 
 ---
 
