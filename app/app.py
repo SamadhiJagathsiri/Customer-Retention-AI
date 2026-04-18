@@ -157,7 +157,7 @@ def load_data_for_defaults():
 df_original = load_data_for_defaults()
 
 # Main header
-st.title("Customer Retention AI")
+st.title("🚀Customer Retention AI")
 st.caption("AI-powered system to identify at-risk customers and prevent churn in real-time")
 
 # ⚙️ SIDEBAR INPUTS WITH ORGANIZED SECTIONS
